@@ -1,0 +1,2 @@
+!function(){var t=document.querySelector("#search-box");document.querySelector(".country-list"),document.querySelector(".country-info");t.addEventListener("input",(function(t){var e=t.target.value;console.log("i",t.target.value),(n=e,fetch("".concat("https://restcountries.com/v3.1","/name/").concat(n)).then((function(t){return t.json()}))).then((function(t){console.log(t)})).catch((function(t){console.error()}));var n}))}();
+//# sourceMappingURL=index.b75d4a1b.js.map
