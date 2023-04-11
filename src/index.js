@@ -1,58 +1,55 @@
-import debounce from "lodash.debounce";
+import debounce from 'lodash.debounce';
 import Notiflix from 'notiflix';
-import {fetchCountries} from "./fetchCountries";
+import { fetchCountries } from './fetchCountries';
 import './css/styles.css';
 
 const DEBOUNCE_DELAY = 300;
-const searchBox = document.querySelector("#search-box");
-const countriesListRef = document.querySelector(".country-list");
-const countryInfoRef = document.querySelector(".country-info");
+const searchBox = document.querySelector('#search-box');
+const countriesListRef = document.querySelector('.country-list');
+const countryInfoRef = document.querySelector('.country-info');
 
 searchBox.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
 function onSearch(e) {
   const searchQuery = e.target.value.trim();
 
-  if(!searchQuery) {
+  if (!searchQuery) {
     countriesListRef.innerHTML = '';
     countryInfoRef.innerHTML = '';
     return;
   }
 
   fetchCountries(searchQuery)
-  .then(data => {
-    if(data.length > 10) {
-      Notiflix.Notify.info(
-        "Too many matches found. Please enter a more specific name.")
-      throw new Error("errorOverflow");
-    }
-    return data;
-  })
-  .then(countries => {
-    if(
-      countries.length >= 2 || 
-      countries.length <= 10) {
+    .then(data => {
+      if (data.length > 10) {
+        Notiflix.Notify.info(
+          'Too many matches found. Please enter a more specific name.'
+        );
+        throw new Error('errorOverflow');
+      }
+      return data;
+    })
+    .then(countries => {
+      if (countries.length >= 2 || countries.length <= 10) {
+        renderCountriesList(countries);
+      }
+      return countries;
+    })
+    .then(countries => {
+      if (countries.length === 1) {
+        renderCountryInfo(Object.values(countries));
+      }
+    })
+    .catch(error => {
+      if (error.message === 'errorOverflow') {
+      } else {
+        onFetchError();
+      }
+    });
+}
 
-      renderCountriesList(countries);
-    } 
-    return countries;
-  })
-  .then(countries => {
-    if(countries.length === 1){
-      renderCountryInfo(Object.values(countries));
-    }
-  })
-  .catch(error => {
-    if (error.message === "errorOverflow") {
-    } else {
-      onFetchError();
-    }
-  });
-};
-
-function onFetchError () {
-  Notiflix.Notify.failure(
-    "Oops, there is no country with that name")
+function onFetchError() {
+  Notiflix.Notify.failure('Oops, there is no country with that name');
 }
 
 function createCountriesListMarkup(fetchCountries) {
@@ -60,13 +57,13 @@ function createCountriesListMarkup(fetchCountries) {
     .map(({ flags, name }) => {
       return `<li class="country-list__item"><img class="country-flag" src="${flags.svg}"><h2 class="country-list__title">${name.official}</h2></li>`;
     })
-    .join("");
+    .join('');
 }
 
 function createCountryInfoMarkup(fetchCountries) {
   return fetchCountries
     .map(({ flags, name, capital, population, languages }) => {
-      const languagesString = Object.values(languages).join(",");
+      const languagesString = Object.values(languages).join(',');
       return `<div class="card-title-wrapper">
       <img class="country-flag" src="${flags.svg}" alt="${name.official}">
       <h2 class="card-title">${name.official}</h2>
@@ -77,7 +74,7 @@ function createCountryInfoMarkup(fetchCountries) {
     <p><span class="title-arguments">languages:</span> ${languagesString}</p>
     </div>`;
     })
-    .join("");
+    .join('');
 }
 
 function renderCountriesList(data) {
